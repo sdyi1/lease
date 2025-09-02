@@ -1,9 +1,6 @@
 package com.nanhang.lease.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -19,12 +16,16 @@ public class BaseEntity implements Serializable {
     private Long id;
 
     @Schema(description = "创建时间")
-    @TableField(value = "create_time")
+    //TableField用于告诉mybatis-plus该字段是数据库中的字段
+    //该注解有一个属性Fill,用来自动填充，我们需要设置自动填充的时机，这里设置的是插入时自动填充
+    @TableField(value = "create_time",fill = FieldFill.INSERT)
     @JsonIgnore//这个注解表示转换成Json的时候忽略该属性
     private Date createTime;
 
     @Schema(description = "更新时间")
-    @TableField(value = "update_time")
+    //TableField用于告诉mybatis-plus该字段是数据库中的字段
+    //该注解有一个属性Fill,用来自动填充，我们需要设置自动填充的时机，这里设置的是修改时自动填充
+    @TableField(value = "update_time",fill = FieldFill.UPDATE)
     @JsonIgnore//这个注解表示转换成Json的时候忽略该属性
     private Date updateTime;
 
