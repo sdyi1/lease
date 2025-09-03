@@ -43,18 +43,23 @@ public class AttrController {
     @Operation(summary = "查询全部属性名称和属性值列表")
     @GetMapping("list")
     public Result<List<AttrKeyVo>> listAttrInfo() {
-        return Result.ok();
+        //写一个方法，并给出返回值,往上一层一层写方法
+       List<AttrKeyVo> list =  attrKeyService.AttrInfoList();
+        return Result.ok(list);
     }
 
     @Operation(summary = "根据id删除属性名称")
     @DeleteMapping("key/deleteById")
     public Result removeAttrKeyById(@RequestParam Long attrKeyId) {
+        //删除属性名称
+        attrKeyService.removeById(attrKeyId);
         return Result.ok();
     }
 
     @Operation(summary = "根据id删除属性值")
     @DeleteMapping("value/deleteById")
     public Result removeAttrValueById(@RequestParam Long id) {
+        attrValueService.removeById(id);
         return Result.ok();
     }
 

@@ -4,4 +4,71 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.AttrKeyMapper">
 
+<!--    resultMap知识点参考印象笔记SSM的Mybatis的resultMap笔记，用于设置查询到的列和对象属性一一映射-->
+<!--    collection标签可以将查询结果中的多个子对象映射到一个集合属性中
+            在这里它被用于将多个 AttrValue 对象映射到 AttrKeyVo 的
+            attrValueList 属性中（一个属性有多个不同的属性值）-->
+    <resultMap id="AttrKeyVoMap" type="com.nanhang.lease.web.admin.vo.attr.AttrKeyVo">
+<!--这里配置 id name attrValueList的对应属性，其他的 isDelete createTime updateTime我们设置了默认值 创建时机-->
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+<!--        集合属性，将提取的数据中Value的数据，和AttrValue一一映射，组成一个对象放入集合-->
+        <collection property="attrValueList" ofType="com.nanhang.lease.model.entity.AttrValue">
+<!--    配置集合中每一个对象的属性和查询到的数据的映射-->
+            <id property="id" column="attr_value_id"/>
+            <result property="name" column="attr_value_name"/>
+            <result property="attrKeyId" column="attr_key_id"/>
+
+        </collection>
+
+    </resultMap>
+
+<!--    listAttrInfo查询后，将我们设置的查询到的数据 根据AttrKeyVoMap映射规则一一映射-->
+    <select id="listAttrInfo" resultMap="AttrKeyVoMap">
+        select
+            k.id,
+            k.name,
+            v.id attr_value_id,
+            v.name attr_value_name,
+            v.attr_key_id  <!-- 获取attrValue表中的与key表关联的keyId-->
+
+            from attr_key k
+            left join attr_value v
+        on k.id=v.attr_key_id and v.is_deleted = 0
+        where k.is_deleted = 0
+    </select>
+
+    <!--
+    <select id="listAttrInfo" resultType="com.nanhang.lease.web.admin.vo.attr.AttrKeyVo">
+        select
+            k.id,
+            k.name,
+            v.id attr_value_id,
+            v.name attr_value_name,
+            v.attr_key_id
+
+            from attr_key k
+            left join attr_value v
+        on k.id=v.attr_key_id
+        where k.is_deleted =0
+
+    </select>
+    -->
+
+    <!--
+    <select id="listAttrInfo" resultType="com.nanhang.lease.web.admin.vo.attr.AttrKeyVo">
+        select
+            k.id,
+            k.name,
+            v.id attr_value_id,
+            v.name attr_value_name,
+            v.attr_key_id
+
+            from attr_key k
+            left join attr_value v
+        on k.id=v.attr_key_id
+        where k.is_deleted =0
+       and v.is_deleted = 0
+    </select>
+    -->
 </mapper>
