@@ -4,4 +4,29 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.FeeKeyMapper">
 
+    <resultMap id="feeInfoListon" type="com.nanhang.lease.web.admin.vo.fee.FeeKeyVo">
+        <id property="id" column="k.id"/>
+        <result property="name" column="k.name"/>
+        <collection property="feeValueList" ofType="com.nanhang.lease.model.entity.FeeValue">
+            <id property="id" column="v.id"/>
+            <result property="name" column="v.name"/>
+            <result property="unit" column="v.unit"/>
+            <result property="feeKeyId" column="v.fee_key_id"/>
+        </collection>
+    </resultMap>
+    <select id="feeInfoList" resultMap="feeInfoListon">
+
+        select
+            k.id 'k.id',
+            k.name 'k.name',
+            v.id 'v.id',
+            v.name 'v.name',
+            v.unit 'v.unit',
+            v.fee_key_id 'v.fee_key_id'
+            from fee_key k
+            left join fee_value v
+            on k.id = v.fee_key_id and v.is_deleted = 0
+            where k.is_deleted = 0
+
+    </select>
 </mapper>

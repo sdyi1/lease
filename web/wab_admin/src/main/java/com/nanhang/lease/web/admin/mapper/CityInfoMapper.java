@@ -3,6 +3,8 @@ package com.nanhang.lease.web.admin.mapper;
 import com.nanhang.lease.model.entity.CityInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
 * @author liubo
 * @description 针对表【city_info】的数据库操作Mapper
@@ -10,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.nanhang.lease.model.CityInfo
 */
 public interface CityInfoMapper extends BaseMapper<CityInfo> {
+
 
 }
 
