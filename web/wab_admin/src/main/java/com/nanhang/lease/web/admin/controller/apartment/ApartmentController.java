@@ -4,6 +4,7 @@ package com.nanhang.lease.web.admin.controller.apartment;
 import com.nanhang.lease.common.result.Result;
 import com.nanhang.lease.model.entity.ApartmentInfo;
 import com.nanhang.lease.model.enums.ReleaseStatus;
+import com.nanhang.lease.web.admin.service.*;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentDetailVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
@@ -11,8 +12,10 @@ import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.PrivateKey;
 import java.util.List;
 
 
@@ -20,10 +23,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/apartment")
 public class ApartmentController {
+//    针对表【apartment_facility(公寓&配套关联表)】的数据库操作Service
+    @Autowired
+    private ApartmentFacilityService apartmentFacilityService;
+//    针对表【apartment_fee_value(公寓&杂费关联表)】的数据库操作Service
+    @Autowired
+    private ApartmentFeeValueService apartmentFeeValueService;
+//    针对表【apartment_info(公寓信息表)】的数据库操作Service
+    @Autowired
+    private ApartmentInfoService apartmentInfoService;
+//    针对表【apartment_label(公寓标签关联表)】的数据库操作Service
+    @Autowired
+    private ApartmentLabelService apartmentLabelService;
+    //    针对表【graph_info(公寓&图片关联表)】的数据库操作Service
+    @Autowired
+    private GraphInfoService graphInfoService;
+
+
 
     @Operation(summary = "保存或更新公寓信息")
     @PostMapping("saveOrUpdate")
     public Result saveOrUpdate(@RequestBody ApartmentSubmitVo apartmentSubmitVo) {
+      /*使用自带的方法，会更具@TablezName的表注解来映射数据
+        而这里的表没有ApartmentSubmitVo属性对应的列，所以我们不能使用自带的方法而是需要字节写方法*/
+         apartmentInfoService.saveOrUpdateApartment(apartmentSubmitVo);
         return Result.ok();
     }
 

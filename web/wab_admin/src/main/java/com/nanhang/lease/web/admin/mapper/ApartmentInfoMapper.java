@@ -7,6 +7,7 @@ import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
 
 /**
 * @author liubo
@@ -16,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 */
 public interface ApartmentInfoMapper extends BaseMapper<ApartmentInfo> {
 
+    void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo);
 }
 
 

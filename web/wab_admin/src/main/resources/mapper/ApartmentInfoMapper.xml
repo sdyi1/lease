@@ -4,4 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.ApartmentInfoMapper">
 
+
+    <parameterMap id="saveOrUpdateApartmentResultMap" type="com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo">
+
+
+    </parameterMap>
+    <insert id="saveOrUpdateApartment" ></insert>
 </mapper>
