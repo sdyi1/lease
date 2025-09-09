@@ -17,7 +17,7 @@ public class ApartmentSubmitVo extends ApartmentInfo {
     private List<Long> facilityInfoIds;
 
     @Schema(description="公寓标签id")
-    private List<Long> labelIds;
+            private List<Long> labelIds;
 
     @Schema(description="公寓杂费值id")
     private List<Long> feeValueIds;

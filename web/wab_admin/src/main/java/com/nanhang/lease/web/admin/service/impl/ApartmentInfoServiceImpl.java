@@ -7,8 +7,13 @@ import com.nanhang.lease.web.admin.mapper.ApartmentInfoMapper;
 import com.nanhang.lease.web.admin.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
+import com.nanhang.lease.web.admin.vo.graph.GraphVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author liubo
@@ -20,10 +25,11 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         implements ApartmentInfoService {
 
 
-    //    针对表【graph_info(公寓&图片关联表)】的数据库操作Service
+    //    针对表【apartment_fee_value(公寓&杂费关联表)】的数据库操作Service
     @Autowired
     private ApartmentFeeValueService apartmentFeeValueService;
 
+    //    针对表【graph_info(公寓&图片关联表)】的数据库操作Service
     @Autowired
     private GraphInfoService graphInfoService;
     //    针对表【apartment_label(公寓标签关联表)】的数据库操作Service
@@ -39,7 +45,7 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
 
 
     @Override
-    public void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo) {
+        public void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo) {
     //添加逻辑：1
     //修改逻辑：2
 
@@ -101,14 +107,110 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         //2:添加剩下的属性
 
         //添加图片列表
+            //获取前端传入的图片集合
+        List<GraphVo> graphVoList = apartmentSubmitVo.getGraphVoList();
+            //前端传入的GraphVo只有 图片名称和 url,我们是将 图片传入到表graph_info中，通过图片类型属性
+            //需要我们手动添加图片类型和图片对象id
+            //图片类型是公寓类型
+            //图片对象id是公寓的id
+        //为什么需要List：我们可以通过Service的SaveList批量将图片添加到表graph_info中
+        List<GraphInfo> graphInfoList = new ArrayList<>();
+            //遍历集合，创建GraphInfo对象，传入图片名称，图片类型，图片对象id，图片url
+        for (GraphVo graphVo : graphVoList) {
+            GraphInfo graphInfo = new GraphInfo();
+            //设置图片名称
+            graphInfo.setName(graphVo.getName());
+            //设置图片类型
+            graphInfo.setItemType(ItemType.APARTMENT);
+            //设置图片所属对象Id（图片属于哪个公寓）
+            graphInfo.setItemId(apartmentSubmitVo.getId());
+            //设置图片url
+            graphInfo.setUrl(graphVo.getUrl());
+            //将graphInfo对象添加到集合中
+            graphInfoList.add(graphInfo);
+        }
+            //批量添加图片
+        graphInfoService.saveBatch(graphInfoList);
+
+//-------------------------------------------------------------------------------------------------------------------------
+
+
+        //添加标签列表
+
+        List<Long> labelIds = apartmentSubmitVo.getLabelIds();
+
+        if(!CollectionUtils.isEmpty(labelIds)) {
+
+            List<ApartmentLabel> apartmentLabelList = new ArrayList<>();
+            //遍历前端传来的标签id集合，每个id创建成ApartmentLabel对象，添加到标签表中，通过apartmentId来怕毛短该标签属于哪个公寓
+            for (Long labelId : labelIds) {
+
+                //使用构造器模式创建对象，设置属性
+                ApartmentLabel apartmentLabel = ApartmentLabel.builder()
+                        .apartmentId(apartmentSubmitVo.getId())
+                        .labelId(labelId)
+                        .build();
+                //将打包好的对象添加到集合中
+                apartmentLabelList.add(apartmentLabel);
+            }
+            //批量添加标签列表
+            apartmentLabelService.saveBatch(apartmentLabelList);
+        }
+
+
+//-------------------------------------------------------------------------------------------------------------------------
+
 
         //添加配套列表
-        //添加标签列表
+
+            List<Long> facilityInfoIds = apartmentSubmitVo.getFacilityInfoIds();
+           //先判断前端传进来的公寓配套数据不为空
+            if(!CollectionUtils.isEmpty(facilityInfoIds)){
+
+                //创建集合，用于存储配套对象
+                List<ApartmentFacility> apartmentFacilityList = new ArrayList<>();
+
+                for (Long facilityInfoId : facilityInfoIds) {
+                    //创建对象,添加数据
+                    ApartmentFacility apartmentFacility =
+                            ApartmentFacility.builder()
+                                    .apartmentId(apartmentSubmitVo.getId())
+                                    .facilityId(facilityInfoId)
+                                    .build();
+                    //将对象添加到集合中
+                    apartmentFacilityList.add(apartmentFacility);
+
+                }
+                //批量添加配套列表
+                apartmentFacilityService.saveBatch(apartmentFacilityList);
+
+            }
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------
+
         //添加杂费列表
-        //添加图片列表
+        List<Long> feeValueIds = apartmentSubmitVo.getFeeValueIds();
+
+            //判断前端传进来的杂费数据不为空
+        if(!CollectionUtils.isEmpty(feeValueIds)) {
+            //创建集合存放杂费对象
+            List<ApartmentFeeValue> apartmentFeeValues = new ArrayList<>();
+
+            for (Long feeValueId : feeValueIds) {
+                ApartmentFeeValue apartmentFeeValue = ApartmentFeeValue.builder()
+                        .apartmentId(apartmentSubmitVo.getId())
+                        .feeValueId(feeValueId)
+                        .build();
+                //将对象添加到集合中
+                apartmentFeeValues.add(apartmentFeeValue);
+
+            }
+            apartmentFeeValueService.saveBatch(apartmentFeeValues);
 
 
-
+        }
 
 
     }
