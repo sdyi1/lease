@@ -16,6 +16,7 @@ spring:
         minimum-idle: 10 #最小空闲连接数量
         pool-name: SPHHikariPool # 连接池名称
 
+
   #用于打印框架生成的sql语句，便于调试
 mybatis-plus:
     configuration:
@@ -27,3 +28,7 @@ minio:
   access-key: 2726155142
   secret-key: 20030428xjh
   bucket-name: lease
+
+springdoc:
+  default-flat-param-object: true
+

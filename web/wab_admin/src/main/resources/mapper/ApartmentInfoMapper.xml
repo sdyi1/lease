@@ -5,9 +5,95 @@
 <mapper namespace="com.nanhang.lease.web.admin.mapper.ApartmentInfoMapper">
 
 
-    <parameterMap id="saveOrUpdateApartmentResultMap" type="com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo">
 
 
-    </parameterMap>
-    <insert id="saveOrUpdateApartment" ></insert>
+
+    <select id="selectIpage" resultType="com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo">
+
+
+        select
+        ai.id,
+        ai.name,
+        ai.introduction,
+        ai.address_detail,
+        ai.province_id,
+        ai.province_name,
+        ai.city_id,
+        ai.city_name,
+        ai.district_id,
+        ai.district_name,
+        ai.phone,
+        ai.latitude,
+        ai.longitude,
+        ai.is_release,
+        ifnull(tc.cnt,0) total_room_count,
+        cc.cnt,
+        ifnull(tc.cnt,0) - ifnull(cc.cnt,0) free_room_count
+    from
+    (select
+        id,
+        name,
+        itroduction,
+        address_detail,
+        province_id,
+        province_name,
+        city_id,
+        city_name,
+        district_id,
+        district_name,
+        phone,
+        latitude,
+        longitude,
+        is_release
+        from
+        apartment_info
+        <where>
+            is_deleted=0
+            <if test="queryVo.provinceId!=null">
+                province_id=#{queryVo.provinceId}
+            </if>
+
+            <if test="queryVo.cityId!=null">
+                city_id=#{queryVo.cityId}
+            </if>
+            <if test="queryVo.districtId!=null">
+                district_id=#{queryVo.districtId}
+            </if>
+
+        </where>
+        )ai
+
+    left join
+
+    (
+        select
+        apartment_id,
+        count(*) cnt
+        from
+        room_info
+        where
+        is_deleted=0
+        and is_release=1
+        group by
+        apartment_id)tc
+
+    on ai.id=tc.apartment_id
+        left join
+
+    (
+        select
+        apartment_id
+        ,count(*) cnt
+        from
+        lease_agreement
+        where
+        is_deleted=0
+        and status in (2,5)
+        group by
+        apartment_id)cc
+
+    on ai.id=cc.apartment_id
+    </select>
+
+
 </mapper>

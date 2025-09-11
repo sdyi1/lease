@@ -1,6 +1,7 @@
 package com.nanhang.lease.web.admin.controller.apartment;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.common.result.Result;
 import com.nanhang.lease.model.entity.ApartmentInfo;
 import com.nanhang.lease.model.enums.ReleaseStatus;
@@ -23,21 +24,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/apartment")
 public class ApartmentController {
-//    针对表【apartment_facility(公寓&配套关联表)】的数据库操作Service
-    @Autowired
-    private ApartmentFacilityService apartmentFacilityService;
-//    针对表【apartment_fee_value(公寓&杂费关联表)】的数据库操作Service
-    @Autowired
-    private ApartmentFeeValueService apartmentFeeValueService;
-//    针对表【apartment_info(公寓信息表)】的数据库操作Service
+
     @Autowired
     private ApartmentInfoService apartmentInfoService;
-//    针对表【apartment_label(公寓标签关联表)】的数据库操作Service
-    @Autowired
-    private ApartmentLabelService apartmentLabelService;
-    //    针对表【graph_info(公寓&图片关联表)】的数据库操作Service
-    @Autowired
-    private GraphInfoService graphInfoService;
+
+
+
+
 
 
 
@@ -53,12 +46,17 @@ public class ApartmentController {
     @Operation(summary = "根据条件分页查询公寓列表")
     @GetMapping("pageItem")
     public Result<IPage<ApartmentItemVo>> pageItem(@RequestParam long current, @RequestParam long size, ApartmentQueryVo queryVo) {
-        return Result.ok();
+        //将页数和单页长度传入Page
+        Page<ApartmentItemVo> apartmentItemVoPage = new Page(current, size);
+        IPage<ApartmentItemVo> ipageApartment =  apartmentInfoService.selectIPage(apartmentItemVoPage,queryVo);
+
+        return Result.ok(ipageApartment);
     }
 
     @Operation(summary = "根据ID获取公寓详细信息")
     @GetMapping("getDetailById")
     public Result<ApartmentDetailVo> getDetailById(@RequestParam Long id) {
+        
         return Result.ok();
     }
 

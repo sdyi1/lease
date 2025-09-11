@@ -1,11 +1,15 @@
 package com.nanhang.lease.web.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.*;
 import com.nanhang.lease.model.enums.ItemType;
 import com.nanhang.lease.web.admin.mapper.ApartmentInfoMapper;
 import com.nanhang.lease.web.admin.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo;
+import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
 import com.nanhang.lease.web.admin.vo.graph.GraphVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +44,13 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
     @Autowired
     private ApartmentFacilityService apartmentFacilityService;
 
+    @Autowired
+    private ApartmentInfoMapper apartmentInfoMapper;
 
 
 
 
+//"保存或更新公寓信息"
     @Override
         public void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo) {
     //添加逻辑：1
@@ -213,6 +220,13 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         }
 
 
+    }
+
+
+//     "根据条件分页查询公寓列表"
+    @Override
+    public IPage<ApartmentItemVo> selectIPage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo) {
+        return apartmentInfoMapper.selectIpage(apartmentItemVoPage,queryVo);
     }
 }
 

@@ -17,7 +17,10 @@ import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
 */
 public interface ApartmentInfoMapper extends BaseMapper<ApartmentInfo> {
 
-    void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo);
+
+
+
+    IPage<ApartmentItemVo> selectIpage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo);
 }
 
 
