@@ -1,6 +1,7 @@
 package com.nanhang.lease.web.admin.service;
 
 import com.nanhang.lease.model.entity.ApartmentInfo;
+import com.nanhang.lease.model.enums.ReleaseStatus;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentDetailVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
@@ -19,4 +20,11 @@ public interface ApartmentInfoService extends IService<ApartmentInfo> {
     void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo);
 
     IPage<ApartmentItemVo> selectIPage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo);
+
+
+    ApartmentDetailVo selectByIdDiy(Long id);
+
+    void apartmentRemoveById(Long id);
+
+
 }

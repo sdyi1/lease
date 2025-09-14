@@ -2,6 +2,7 @@ package com.nanhang.lease.web.admin.mapper;
 
 import com.nanhang.lease.model.entity.ApartmentInfo;
 import com.nanhang.lease.model.enums.LeaseStatus;
+import com.nanhang.lease.web.admin.vo.apartment.ApartmentDetailVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -21,6 +22,8 @@ public interface ApartmentInfoMapper extends BaseMapper<ApartmentInfo> {
 
 
     IPage<ApartmentItemVo> selectIpage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo);
+
+
 }
 
 

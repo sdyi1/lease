@@ -33,17 +33,17 @@
     (select
         id,
         name,
-        itroduction,
-        address_detail,
+        introduction,
         province_id,
         province_name,
         city_id,
         city_name,
         district_id,
         district_name,
-        phone,
+        address_detail,
         latitude,
         longitude,
+        phone,
         is_release
         from
         apartment_info
@@ -94,6 +94,9 @@
 
     on ai.id=cc.apartment_id
     </select>
+
+
+
 
 
 </mapper>

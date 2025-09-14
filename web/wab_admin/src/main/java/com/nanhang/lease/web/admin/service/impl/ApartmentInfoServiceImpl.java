@@ -1,17 +1,26 @@
 package com.nanhang.lease.web.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.nanhang.lease.common.exception.LeaseException;
+import com.nanhang.lease.common.result.ResultCodeEnum;
 import com.nanhang.lease.model.entity.*;
 import com.nanhang.lease.model.enums.ItemType;
-import com.nanhang.lease.web.admin.mapper.ApartmentInfoMapper;
+import com.nanhang.lease.model.enums.ReleaseStatus;
+import com.nanhang.lease.web.admin.mapper.*;
 import com.nanhang.lease.web.admin.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nanhang.lease.web.admin.vo.apartment.ApartmentDetailVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentItemVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentQueryVo;
 import com.nanhang.lease.web.admin.vo.apartment.ApartmentSubmitVo;
+import com.nanhang.lease.web.admin.vo.fee.FeeKeyVo;
+import com.nanhang.lease.web.admin.vo.fee.FeeValueVo;
 import com.nanhang.lease.web.admin.vo.graph.GraphVo;
+import kotlin.jvm.internal.Lambda;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -46,11 +55,35 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
 
     @Autowired
     private ApartmentInfoMapper apartmentInfoMapper;
+    //针对表【facility_info(配套信息表)】的数据库操作Service
+    @Autowired
+    private FacilityInfoService facilityInfoService;
+    //针对表【label_info(标签信息表)】的数据库操作Service
+    @Autowired
+    private LabelInfoService labelInfoService;
+    //针对表【label_info(标签信息表)】的数据库操作Mapper
+    @Autowired
+    private LabelInfoMapper labelInfoMapper;
+
+    @Autowired
+    private FacilityInfoMapper facilityInfoMapper;
+    @Autowired
+    private FeeValueMapper feeValueMapper;
+    @Autowired
+    private GraphInfoMapper graphInfoMapper;
+    @Autowired
+    private FeeKeyService feeKeyService;
+
+    //用于判断公寓可租赁房间数量
+    @Autowired
+    private RoomInfoMapper roomInfoMapper;
+
+    @Autowired
+    private FeeValueService feeValueService;;
 
 
 
-
-//"保存或更新公寓信息"
+    //"保存或更新公寓信息"
     @Override
         public void saveOrUpdateApartment(ApartmentSubmitVo apartmentSubmitVo) {
     //添加逻辑：1
@@ -90,14 +123,14 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         //删除标签列表
             LambdaQueryWrapper<ApartmentLabel> ApartmentLabelLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 //设置条件
-            ApartmentLabelLambdaQueryWrapper.eq(ApartmentLabel::getApartmentId,ItemType.APARTMENT);
+            ApartmentLabelLambdaQueryWrapper.eq(ApartmentLabel::getApartmentId,apartmentSubmitVo.getId());
                 //删除
             apartmentLabelService.remove(ApartmentLabelLambdaQueryWrapper);
         //删除杂费列表
 
                 //创建条件对象配置条件
             LambdaQueryWrapper<ApartmentFeeValue> FeeKeyLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            FeeKeyLambdaQueryWrapper.eq(ApartmentFeeValue::getApartmentId,ItemType.APARTMENT);
+            FeeKeyLambdaQueryWrapper.eq(ApartmentFeeValue::getApartmentId,apartmentSubmitVo.getId());
                 //删除
                 apartmentFeeValueService.remove(FeeKeyLambdaQueryWrapper);
 
@@ -105,7 +138,7 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         //删除配套列表
             //创建条件对象配置调价
             LambdaQueryWrapper<ApartmentFacility> FacilityInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            FacilityInfoLambdaQueryWrapper.eq(ApartmentFacility::getApartmentId,ItemType.APARTMENT);
+            FacilityInfoLambdaQueryWrapper.eq(ApartmentFacility::getApartmentId,apartmentSubmitVo.getId());
         apartmentFacilityService.remove(FacilityInfoLambdaQueryWrapper);
 
         }
@@ -114,30 +147,37 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         //2:添加剩下的属性
 
         //添加图片列表
+
+
             //获取前端传入的图片集合
         List<GraphVo> graphVoList = apartmentSubmitVo.getGraphVoList();
             //前端传入的GraphVo只有 图片名称和 url,我们是将 图片传入到表graph_info中，通过图片类型属性
             //需要我们手动添加图片类型和图片对象id
             //图片类型是公寓类型
             //图片对象id是公寓的id
-        //为什么需要List：我们可以通过Service的SaveList批量将图片添加到表graph_info中
-        List<GraphInfo> graphInfoList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(graphVoList)){
+            //为什么需要List：我们可以通过Service的SaveList批量将图片添加到表graph_info中
+            List<GraphInfo> graphInfoList = new ArrayList<>();
             //遍历集合，创建GraphInfo对象，传入图片名称，图片类型，图片对象id，图片url
-        for (GraphVo graphVo : graphVoList) {
-            GraphInfo graphInfo = new GraphInfo();
-            //设置图片名称
-            graphInfo.setName(graphVo.getName());
-            //设置图片类型
-            graphInfo.setItemType(ItemType.APARTMENT);
-            //设置图片所属对象Id（图片属于哪个公寓）
-            graphInfo.setItemId(apartmentSubmitVo.getId());
-            //设置图片url
-            graphInfo.setUrl(graphVo.getUrl());
-            //将graphInfo对象添加到集合中
-            graphInfoList.add(graphInfo);
-        }
+            for (GraphVo graphVo : graphVoList) {
+                GraphInfo graphInfo = new GraphInfo();
+                //设置图片名称
+                graphInfo.setName(graphVo.getName());
+                //设置图片类型
+                graphInfo.setItemType(ItemType.APARTMENT);
+                //设置图片所属对象Id（图片属于哪个公寓）
+                graphInfo.setItemId(apartmentSubmitVo.getId());
+                //设置图片url
+                graphInfo.setUrl(graphVo.getUrl());
+                //将graphInfo对象添加到集合中
+                graphInfoList.add(graphInfo);
+            }
             //批量添加图片
-        graphInfoService.saveBatch(graphInfoList);
+            graphInfoService.saveBatch(graphInfoList);
+
+        }
+
 
 //-------------------------------------------------------------------------------------------------------------------------
 
@@ -228,6 +268,125 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
     public IPage<ApartmentItemVo> selectIPage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo) {
         return apartmentInfoMapper.selectIpage(apartmentItemVoPage,queryVo);
     }
+
+    @Override
+    public ApartmentDetailVo selectByIdDiy(Long id) {
+    //查询公寓基本信息
+        ApartmentInfo apartmentInfo = apartmentInfoMapper.selectById(id);
+    //查询图片列表
+       /* LambdaQueryWrapper<GraphInfo> graphVoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        graphVoLambdaQueryWrapper.eq(GraphInfo::getItemId,id);
+        graphVoLambdaQueryWrapper.eq(GraphInfo::getItemType,ItemType.APARTMENT);
+        List<GraphInfo> graphInfoList = graphInfoService.list(graphVoLambdaQueryWrapper);
+            //ApartmentDetailVo 需要的是GraphVo对象，遍历集合转化对象,放入GraphVo集合
+        List<GraphVo> graphVoList = new ArrayList<>();
+        for (GraphInfo graphInfo : graphInfoList) {
+            GraphVo graphVo = new GraphVo();
+            graphVo.setName(graphInfo.getName());
+            graphVo.setUrl(graphInfo.getUrl());
+            graphVoList.add(graphVo);
+        }*/
+            //尝试使用Mapper自己写Sql语句的方法实现，会简介的很多
+
+        List<GraphVo> graphVoList = graphInfoMapper.selectGraphVoByApartmentId(id);
+    //查询标签列表
+            /*LambdaQueryWrapper<LabelInfo> labelInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            labelInfoLambdaQueryWrapper.eq(LabelInfo::getType,1);
+        labelInfoService.list(labelInfoLambdaQueryWrapper);*/
+            //尝试使用Mapper自己写Sql语句的方法实现
+        List<LabelInfo> labelInfoList = labelInfoMapper.selectLabelInfoByApartmentId(id);
+    //查询配套列表
+        /*LambdaQueryWrapper<FacilityInfo> facilityInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        facilityInfoLambdaQueryWrapper.eq(FacilityInfo::getType,ItemType.APARTMENT);
+        facilityInfoService.list(facilityInfoLambdaQueryWrapper);*/
+        //尝试使用Mapper自己写Sql语句的方法实现
+        List<FacilityInfo> facilityInfoList = facilityInfoMapper.selectFacilityInfoByApartmentId(id);
+
+        //查询杂费列表
+        /*LambdaQueryWrapper<FeeKey> feeKeyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        feeKeyLambdaQueryWrapper.eq(FeeKey::getIsDeleted,0);
+        feeKeyService.list(feeKeyLambdaQueryWrapper);
+
+        LambdaQueryWrapper<FeeValue> feeValueLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        feeValueLambdaQueryWrapper.eq(FeeValue::getIsDeleted,0);
+        feeValueService.list(feeValueLambdaQueryWrapper);*/
+        //尝试使用Mapper自己写Sql语句的方法实现
+        List<FeeValueVo> feeValueVoList = feeValueMapper.selectFeeValueVoByApartmentId(id);
+
+        //将公寓基本信息复制到vo对象中
+        ApartmentDetailVo apartmentDetailVo = new ApartmentDetailVo();
+        BeanUtils.copyProperties(apartmentInfo,apartmentDetailVo);
+
+        //将公寓图片列表复制到vo对象中
+        apartmentDetailVo.setGraphVoList(graphVoList);
+        //将标签列表复制到vo对象中
+        apartmentDetailVo.setLabelInfoList(labelInfoList);
+        //将配套列表复制到vo对象中
+        apartmentDetailVo.setFacilityInfoList(facilityInfoList);
+        //将杂费列表复制到vo对象中
+        apartmentDetailVo.setFeeValueVoList(feeValueVoList);
+
+
+
+
+        return apartmentDetailVo;
+    }
+
+    @Override
+    public void apartmentRemoveById(Long id) {
+        //自己写Sql语句，计算出id对应公寓下的房间数量
+        int roomNumber = roomInfoMapper.selectRoomNumberByApartmentId(id);
+    //方法二
+        //使用MyBatisPlus自带的方法计算出id对应公寓下的房间数量
+        LambdaQueryWrapper<RoomInfo> roomNumberQueryWrapper = new LambdaQueryWrapper<>();
+        roomNumberQueryWrapper.eq(RoomInfo::getApartmentId,id);
+       long roomNumber2 = roomInfoMapper.selectCount(roomNumberQueryWrapper);
+        if(roomNumber2>0){
+            //当触发这个异常时，全局异常处理器会调用我们写的getMessage方法获取message，将其printf
+            throw new LeaseException(ResultCodeEnum.ADMIN_APARTMENT_DELETE_ROOM_ERROR);
+        }else {
+
+            //删除图片列表
+            LambdaQueryWrapper<GraphInfo> graphInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            //配置条件
+            //首先判断图片类型是公寓类型，防止删除房间类型的图片，因为房间类型的图片id可能和公寓类型的图片Id一样
+            graphInfoLambdaQueryWrapper.eq(GraphInfo::getItemType, ItemType.APARTMENT)
+                    //其次判断图片的所有对象id是否和公寓的id相等，防止删除其他公寓的图片
+                    .eq(GraphInfo::getItemId, id);
+            //根据配置好的条件删除图片
+            graphInfoService.remove(graphInfoLambdaQueryWrapper);
+
+            //删除标签列表
+            LambdaQueryWrapper<ApartmentLabel> ApartmentLabelLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            //设置条件
+            ApartmentLabelLambdaQueryWrapper.eq(ApartmentLabel::getApartmentId, id);
+            //删除
+            apartmentLabelService.remove(ApartmentLabelLambdaQueryWrapper);
+            //删除杂费列表
+
+            //创建条件对象配置条件
+            LambdaQueryWrapper<ApartmentFeeValue> FeeKeyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            FeeKeyLambdaQueryWrapper.eq(ApartmentFeeValue::getApartmentId, id);
+            //删除
+            apartmentFeeValueService.remove(FeeKeyLambdaQueryWrapper);
+
+
+            //删除配套列表
+            //创建条件对象配置调价
+            LambdaQueryWrapper<ApartmentFacility> FacilityInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            FacilityInfoLambdaQueryWrapper.eq(ApartmentFacility::getApartmentId, id);
+            apartmentFacilityService.remove(FacilityInfoLambdaQueryWrapper);
+        }
+
+    }
+
+
+
+
+
+
+
+
 }
 
 

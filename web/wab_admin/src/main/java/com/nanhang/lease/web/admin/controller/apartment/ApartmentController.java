@@ -1,6 +1,8 @@
 package com.nanhang.lease.web.admin.controller.apartment;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.common.result.Result;
 import com.nanhang.lease.model.entity.ApartmentInfo;
@@ -56,26 +58,35 @@ public class ApartmentController {
     @Operation(summary = "根据ID获取公寓详细信息")
     @GetMapping("getDetailById")
     public Result<ApartmentDetailVo> getDetailById(@RequestParam Long id) {
-        
-        return Result.ok();
+        ApartmentDetailVo apartmentDetailVo = apartmentInfoService.selectByIdDiy(id);
+        return Result.ok(apartmentDetailVo);
     }
 
     @Operation(summary = "根据id删除公寓信息")
     @DeleteMapping("removeById")
     public Result removeById(@RequestParam Long id) {
+
+        apartmentInfoService.apartmentRemoveById(id);
         return Result.ok();
     }
 
     @Operation(summary = "根据id修改公寓发布状态")
     @PostMapping("updateReleaseStatusById")
     public Result updateReleaseStatusById(@RequestParam Long id, @RequestParam ReleaseStatus status) {
+        LambdaUpdateWrapper<ApartmentInfo> apartmentInfoLambdaQueryWrapper = new LambdaUpdateWrapper<>();
+        apartmentInfoLambdaQueryWrapper.eq(ApartmentInfo::getId,id);
+        apartmentInfoLambdaQueryWrapper.set(ApartmentInfo::getIsRelease,status);
+        apartmentInfoService.update(apartmentInfoLambdaQueryWrapper);
         return Result.ok();
     }
 
     @Operation(summary = "根据区县id查询公寓信息列表")
     @GetMapping("listInfoByDistrictId")
     public Result<List<ApartmentInfo>> listInfoByDistrictId(@RequestParam Long id) {
-        return Result.ok();
+        LambdaQueryWrapper<ApartmentInfo> apartmentInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        apartmentInfoLambdaQueryWrapper.eq(ApartmentInfo::getDistrictId,id);
+        List<ApartmentInfo> apartmentInfoList = apartmentInfoService.list(apartmentInfoLambdaQueryWrapper);
+        return Result.ok( apartmentInfoList);
     }
 }
 
