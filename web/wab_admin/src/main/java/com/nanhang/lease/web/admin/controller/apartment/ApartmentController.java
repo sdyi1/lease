@@ -50,6 +50,8 @@ public class ApartmentController {
     public Result<IPage<ApartmentItemVo>> pageItem(@RequestParam long current, @RequestParam long size, ApartmentQueryVo queryVo) {
         //将页数和单页长度传入Page
         Page<ApartmentItemVo> apartmentItemVoPage = new Page(current, size);
+
+        //将过滤条件和Page对象传入方法中
         IPage<ApartmentItemVo> ipageApartment =  apartmentInfoService.selectIPage(apartmentItemVoPage,queryVo);
 
         return Result.ok(ipageApartment);

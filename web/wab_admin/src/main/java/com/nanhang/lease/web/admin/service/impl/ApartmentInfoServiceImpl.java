@@ -332,6 +332,7 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         return apartmentDetailVo;
     }
 
+    //根据id删除公寓
     @Override
     public void apartmentRemoveById(Long id) {
         //自己写Sql语句，计算出id对应公寓下的房间数量

@@ -1,5 +1,6 @@
 package com.nanhang.lease.web.admin.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.RoomInfo;
 import com.nanhang.lease.web.admin.vo.room.RoomDetailVo;
 import com.nanhang.lease.web.admin.vo.room.RoomItemVo;
@@ -15,4 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RoomInfoService extends IService<RoomInfo> {
 
+    void saveOrUpdateRoom(RoomSubmitVo roomSubmitVo);
+
+    IPage<RoomItemVo> selectIPage(Page<RoomItemVo> roomItemVoPage, RoomQueryVo queryVo);
 }

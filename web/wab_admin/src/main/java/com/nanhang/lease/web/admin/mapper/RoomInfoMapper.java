@@ -1,5 +1,6 @@
 package com.nanhang.lease.web.admin.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.RoomInfo;
 import com.nanhang.lease.web.admin.vo.room.RoomItemVo;
 import com.nanhang.lease.web.admin.vo.room.RoomQueryVo;
@@ -15,6 +16,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 public interface RoomInfoMapper extends BaseMapper<RoomInfo> {
 
     int selectRoomNumberByApartmentId(Long id);
+
+
+    IPage<RoomItemVo> selectIPage(Page<RoomItemVo> roomItemVoPage, RoomQueryVo queryVo);
 }
 
 
