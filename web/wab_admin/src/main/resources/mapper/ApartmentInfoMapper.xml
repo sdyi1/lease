@@ -94,9 +94,39 @@
 
     on ai.id=cc.apartment_id
     </select>
+    <select id="selectByRoomIdDiy" resultType="com.nanhang.lease.model.entity.ApartmentInfo">
+
+        select
+            name,
+            introduction,
+            district_id,
+            district_name,
+            city_id,
+            city_name,
+            province_id,
+            province_name,
+            address_detail,
+            latitude,
+            longitude,
+            phone,
+            is_release
+
+            from
+                apartment_info
+        where
+            id =(
+                select
+                    apartment_id
+                    from
+                        room_info
+                    where
+                        is_deleted = 0
+                        and id = #{id}
+                )
 
 
 
+    </select>
 
 
 </mapper>

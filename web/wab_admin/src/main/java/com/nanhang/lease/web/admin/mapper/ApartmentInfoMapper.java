@@ -24,6 +24,7 @@ public interface ApartmentInfoMapper extends BaseMapper<ApartmentInfo> {
     IPage<ApartmentItemVo> selectIpage(Page<ApartmentItemVo> apartmentItemVoPage, ApartmentQueryVo queryVo);
 
 
+    ApartmentInfo selectByRoomIdDiy(Long id);
 }
 
 

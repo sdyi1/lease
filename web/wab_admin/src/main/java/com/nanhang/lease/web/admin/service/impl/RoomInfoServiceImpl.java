@@ -79,6 +79,9 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
     //自动注入可选租期Mapper
     @Autowired
     private LeaseTermMapper leaseTermMapper;
+    //自动注入公寓信息Service
+    @Autowired
+    private ApartmentInfoMapper apartmentInfoMapper;
 
 
     
@@ -261,6 +264,10 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         //先将RoomInfo查询出来
         RoomInfo roomInfo = roomInfoMapper.selectById(id);
 
+        //获取ApartmentInfo
+        ApartmentInfo apartmentInfo = apartmentInfoMapper.selectByRoomIdDiy(id);
+
+
         //获取id对应图片集合
         List<GraphVo> graphInfoList = graphInfoMapper.selectByIdDiy(ItemType.ROOM,id);
         //获取id对应属性信息集合
@@ -278,6 +285,8 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         RoomDetailVo roomDetailVo = new RoomDetailVo();
         //使用Spring的工具类将roomInfo的数据对拷贝到RoomDetailVo对象中
         BeanUtils.copyProperties(roomInfo,roomDetailVo);
+        //将ApartmentInfo对象添加到RoomDetailVo对象中
+        roomDetailVo.setApartmentInfo(apartmentInfo);
         //将查询到的图片列表添加到RoomDetailVo对象中
         roomDetailVo.setGraphVoList(graphInfoList);
         //将查询到的属性信息列表添加到RoomDetailVo对象中

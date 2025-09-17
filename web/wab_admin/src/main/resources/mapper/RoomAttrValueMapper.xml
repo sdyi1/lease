@@ -15,9 +15,8 @@
         select
             av.name,
             av.attr_key_id attrKeyId,
-            rav.attr_value_id,
             ak.name attrKeyName
-            rav.
+
         from
             attr_value av
                 Left join
