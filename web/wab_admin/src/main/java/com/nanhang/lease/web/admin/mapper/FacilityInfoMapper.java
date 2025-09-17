@@ -2,6 +2,7 @@ package com.nanhang.lease.web.admin.mapper;
 
 import com.nanhang.lease.model.entity.FacilityInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.nanhang.lease.model.enums.ItemType;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public interface FacilityInfoMapper extends BaseMapper<FacilityInfo> {
 
     List<FacilityInfo> selectFacilityInfoByApartmentId(Long id);
+
+    List<FacilityInfo> selectByIdDiy(ItemType itemType,Long id);
 }
 
 

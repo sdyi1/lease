@@ -288,7 +288,7 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         }*/
             //尝试使用Mapper自己写Sql语句的方法实现，会简介的很多
 
-        List<GraphVo> graphVoList = graphInfoMapper.selectGraphVoByApartmentId(id);
+        List<GraphVo> graphVoList = graphInfoMapper.selectGraphVoByApartmentId(ItemType.APARTMENT,id);
     //查询标签列表
             /*LambdaQueryWrapper<LabelInfo> labelInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
             labelInfoLambdaQueryWrapper.eq(LabelInfo::getType,1);

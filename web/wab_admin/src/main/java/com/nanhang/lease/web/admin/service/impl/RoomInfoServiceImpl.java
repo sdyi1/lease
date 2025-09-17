@@ -6,17 +6,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.graph.Graph;
 import com.nanhang.lease.model.entity.*;
 import com.nanhang.lease.model.enums.ItemType;
-import com.nanhang.lease.web.admin.mapper.RoomInfoMapper;
+import com.nanhang.lease.web.admin.mapper.*;
 import com.nanhang.lease.web.admin.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nanhang.lease.web.admin.vo.attr.AttrValueVo;
 import com.nanhang.lease.web.admin.vo.graph.GraphVo;
+import com.nanhang.lease.web.admin.vo.room.RoomDetailVo;
 import com.nanhang.lease.web.admin.vo.room.RoomItemVo;
 import com.nanhang.lease.web.admin.vo.room.RoomQueryVo;
 import com.nanhang.lease.web.admin.vo.room.RoomSubmitVo;
 import kotlin.jvm.internal.Lambda;
 import org.apache.tomcat.util.net.SSLUtilBase;
 import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -56,9 +58,27 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
     //自动注入配套信息Service
     @Autowired
     private RoomAttrValueService roomAttrValueService;
-
+    //自动注入房间Mapper
     @Autowired
     private RoomInfoMapper roomInfoMapper;
+    //自动注入图片Mapper
+    @Autowired
+    private GraphInfoMapper graphInfoMapper;
+    //自动注入属性信息Mapper
+    @Autowired
+    private RoomAttrValueMapper roomAttrValueMapper;
+    //自动注入配套信息Mapper
+    @Autowired
+    private FacilityInfoMapper facilityInfoMapper;
+    //自动注入标签信息Mapper
+    @Autowired
+    private LabelInfoMapper labelInfoMapper;
+    //自动注入支付方式Mapper
+    @Autowired
+    private PaymentTypeMapper paymentTypeMapper;
+    //自动注入可选租期Mapper
+    @Autowired
+    private LeaseTermMapper leaseTermMapper;
 
 
     
@@ -233,6 +253,46 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
         return roomInfoMapper.selectIPage(roomItemVoPage,queryVo);
 
 
+    }
+
+    //根据id查询房间详细信息
+    @Override
+    public RoomDetailVo selectByIdDiy(Long id) {
+        //先将RoomInfo查询出来
+        RoomInfo roomInfo = roomInfoMapper.selectById(id);
+
+        //获取id对应图片集合
+        List<GraphVo> graphInfoList = graphInfoMapper.selectByIdDiy(ItemType.ROOM,id);
+        //获取id对应属性信息集合
+        List<AttrValueVo> attrValueVoList = roomAttrValueMapper.selectByIdDiy(id);
+        //获取id对应配套信息列表
+        List<FacilityInfo> facilityInfoList = facilityInfoMapper.selectByIdDiy(ItemType.ROOM,id);
+        //获取id对应标签信息集合
+        List<LabelInfo> labelInfoList = labelInfoMapper.selectByIdDiy(id);
+        //获取id对应支付方式集合
+        List<PaymentType> paymentTypeList = paymentTypeMapper.selectByIdDiy(id);
+        //获取id对应可选租期集合
+        List<LeaseTerm> leaseTermList = leaseTermMapper.selectByIdDiy(id);
+
+        //创建RoomDetailVo对象
+        RoomDetailVo roomDetailVo = new RoomDetailVo();
+        //使用Spring的工具类将roomInfo的数据对拷贝到RoomDetailVo对象中
+        BeanUtils.copyProperties(roomInfo,roomDetailVo);
+        //将查询到的图片列表添加到RoomDetailVo对象中
+        roomDetailVo.setGraphVoList(graphInfoList);
+        //将查询到的属性信息列表添加到RoomDetailVo对象中
+        roomDetailVo.setAttrValueVoList(attrValueVoList);
+        //将查询到的配套信息列表添加到RoomDetailVo对象中
+        roomDetailVo.setFacilityInfoList(facilityInfoList);
+        //将查询到的标签信息列表添加到RoomDetailVo对象中
+        roomDetailVo.setLabelInfoList(labelInfoList);
+        //将查询到的支付方式列表添加到RoomDetailVo对象中
+        roomDetailVo.setPaymentTypeList(paymentTypeList);
+        //将查询到的可选租期列表添加到RoomDetailVo对象中
+        roomDetailVo.setLeaseTermList(leaseTermList);
+
+
+        return roomDetailVo;
     }
 }
 

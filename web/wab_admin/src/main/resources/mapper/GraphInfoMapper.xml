@@ -15,5 +15,19 @@
             graph_info
         where
             item_id=#{id}
+            and
+            item_type = #{itemType}
+    </select>
+    <select id="selectByIdDiy" resultType="com.nanhang.lease.web.admin.vo.graph.GraphVo">
+
+        select
+            name,
+            url
+            from
+                graph_info
+        where
+            item_type = #{itemType}
+            and
+            item_id = #{id}
     </select>
 </mapper>

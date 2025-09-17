@@ -22,12 +22,14 @@ mybatis-plus:
     configuration:
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印sql语句
 
+
 # 配置minio
 minio:
   endpoint: http://192.168.10.101:9000
   access-key: 2726155142
   secret-key: 20030428xjh
   bucket-name: lease
+
 
 springdoc:
   default-flat-param-object: true

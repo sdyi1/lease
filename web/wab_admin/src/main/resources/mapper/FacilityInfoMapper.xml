@@ -29,4 +29,25 @@ select
 
 
     </select>
+    <select id="selectByIdDiy" resultType="com.nanhang.lease.model.entity.FacilityInfo">
+        select
+            fi.type,
+                fi.name,
+                fi.icon
+
+
+            from
+                room_facility rf
+        Left join
+                    facility_info fi
+        on
+            rf.facility_id = fi.id
+
+        where
+            rf.room_id = #{id}
+            and rf.isdeleted=0
+            and fi.type = #{itemType}
+
+
+    </select>
 </mapper>

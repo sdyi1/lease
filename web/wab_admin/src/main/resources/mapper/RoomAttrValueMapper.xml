@@ -4,4 +4,44 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.RoomAttrValueMapper">
 
+    <resultMap id="roomSelectByIdDiyMap" type="com.nanhang.lease.web.admin.vo.attr.AttrValueVo">
+        <result property="attrKeyName" column="attrKeyName"/>
+       <result property="name" column="name"/>
+        <result property="attrKeyId" column="attrKeyId"/>
+
+        
+    </resultMap>
+    <select id="selectByIdDiy" resultType="com.nanhang.lease.web.admin.vo.attr.AttrValueVo">
+        select
+            av.name,
+            av.attr_key_id attrKeyId,
+            rav.attr_value_id,
+            ak.name attrKeyName
+            rav.
+        from
+            attr_value av
+                Left join
+
+            room_attr_value rav
+
+            on
+                av.id = rav.attr_value_id
+
+                Left join
+            attr_key ak
+            on
+                av.attr_key_id = ak.id
+
+
+        where
+            rav.room_id=#{id}
+          and rav.is_deleted = 0
+          and av.is_deleted = 0
+
+
+
+
+
+
+    </select>
 </mapper>

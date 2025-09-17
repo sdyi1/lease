@@ -4,4 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.LeaseTermMapper">
 
+    <select id="selectByIdDiy" resultType="com.nanhang.lease.model.entity.LeaseTerm">
+    select
+        lt.month_count,
+        lt.unit
+
+        from
+            room_lease_term rlt
+    Left join
+                lease_term lt
+
+    on
+        rlt.lease_term_id = lt.id
+
+    where
+        rlt.room_id = #{id}
+    and rlt.is_deleted =  0
+
+
+
+
+
+    </select>
 </mapper>

@@ -20,4 +20,22 @@
                        is_deleted=0
                      and apartment_id = #{id})
     </select>
+    <select id="selectByIdDiy" resultType="com.nanhang.lease.model.entity.LabelInfo">
+        select
+            li.type,
+            li.name
+            from
+                room_label rl
+        left join
+                    label_info li
+        on
+         rl.label_id =li.id
+        where
+            rl.room_id = #{id}
+            and rl.is_deleted =0
+
+
+
+
+    </select>
 </mapper>
