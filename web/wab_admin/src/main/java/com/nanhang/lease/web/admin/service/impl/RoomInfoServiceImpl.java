@@ -106,9 +106,9 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
             graphInfoService.remove(graphInfoLambdaQueryWrapper);
 
 //检查 //删除属性列表
-            LambdaQueryWrapper<RoomAttrValue> attrValueLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            attrValueLambdaQueryWrapper.eq(RoomAttrValue::getAttrValueId,roomSubmitVo.getId());
-            attrValueService.removeById(attrValueLambdaQueryWrapper);
+            LambdaQueryWrapper<RoomAttrValue> roomAttrValueLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            roomAttrValueLambdaQueryWrapper.eq(RoomAttrValue::getRoomId,roomSubmitVo.getId());
+            roomAttrValueService.remove(roomAttrValueLambdaQueryWrapper);
             //删除配套信息
             LambdaQueryWrapper<RoomFacility> facilityInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
             facilityInfoLambdaQueryWrapper.eq(RoomFacility::getRoomId,roomSubmitVo.getId());
