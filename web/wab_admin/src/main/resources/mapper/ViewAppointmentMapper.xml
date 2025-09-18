@@ -4,4 +4,47 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nanhang.lease.web.admin.mapper.ViewAppointmentMapper">
 
+    
+    <resultMap id="appointmentVo" type="com.nanhang.lease.web.admin.vo.appointment.AppointmentVo">
+    
+        <association property="apartmentInfo" javaType="com.nanhang.lease.model.entity.ApartmentInfo">
+
+            <result property="name" column="apartmentName"/>
+            <result property="phone" column="apartmentPhone"/>
+        </association>
+
+    
+    </resultMap>
+    <select id="selectIpage" resultType="com.nanhang.lease.web.admin.vo.appointment.AppointmentVo">
+
+        select
+            ai.name apartmentName,
+            ai.introduction,
+            ai.district_id,
+            ai.district_name,
+            ai.city_id,
+            ai.city_name,
+            ai.province_id,
+            ai.province_name,
+            ai.address_detail,
+            ai.latitude,
+            ai.longitude,
+            ai.phone apartmentPhone,
+            ai.is_release,
+            va.user_id,
+            va.name,
+            va.phone,
+            va.apartment_id,
+            va.appointment_time,
+            va.additional_info,
+            va.appointment_status,
+        from
+                view_appointment va
+            left join
+                    apartment_info ai
+            on va.apartment_id = ai.id
+        where
+            va.is_deleted=0
+
+    </select>
 </mapper>
