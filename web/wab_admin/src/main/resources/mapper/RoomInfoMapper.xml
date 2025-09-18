@@ -61,7 +61,7 @@
             on ri.id = la.room_id and la.is_deleted=0
 
     <where>
-    la.is_deleted=0
+    ri.is_deleted=0
     <if test="queryVo.provinceId!=null">
         and ai.province_id=#{queryVo.provinceId}
     </if>

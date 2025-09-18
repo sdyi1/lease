@@ -2,6 +2,7 @@ package com.nanhang.lease.web.admin.controller.apartment;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.common.result.Result;
 import com.nanhang.lease.model.entity.RoomInfo;
@@ -66,13 +67,21 @@ public class RoomController {
     @Operation(summary = "根据id修改房间发布状态")
     @PostMapping("updateReleaseStatusById")
     public Result updateReleaseStatusById(Long id, ReleaseStatus status) {
+
+        LambdaUpdateWrapper<RoomInfo> roomInfoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        roomInfoLambdaUpdateWrapper.eq(RoomInfo::getId,id);
+        roomInfoLambdaUpdateWrapper.set(RoomInfo::getIsRelease,status);
+        roomInfoService.update(roomInfoLambdaUpdateWrapper);
         return Result.ok();
     }
 
     @GetMapping("listBasicByApartmentId")
     @Operation(summary = "根据公寓id查询房间列表")
     public Result<List<RoomInfo>> listBasicByApartmentId(Long id) {
-        return Result.ok();
+        LambdaQueryWrapper<RoomInfo> listLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        listLambdaQueryWrapper.eq(RoomInfo::getApartmentId,id);
+        List<RoomInfo> roomInfoList = roomInfoService.list(listLambdaQueryWrapper);
+        return Result.ok(roomInfoList);
     }
 
 }
