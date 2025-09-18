@@ -84,7 +84,7 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
     private ApartmentInfoMapper apartmentInfoMapper;
 
 
-    
+
     public RoomInfoServiceImpl(GraphInfoService graphInfoService, AttrValueService attrValueService) {
         this.graphInfoService = graphInfoService;
         this.attrValueService = attrValueService;
@@ -302,6 +302,46 @@ public class RoomInfoServiceImpl extends ServiceImpl<RoomInfoMapper, RoomInfo>
 
 
         return roomDetailVo;
+    }
+
+
+    //根据id删除房间
+    @Override
+    public void removeByIdDiy(Long id) {
+
+
+
+        //删除图片列表
+        LambdaQueryWrapper<GraphInfo> graphInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        graphInfoLambdaQueryWrapper.eq(GraphInfo::getItemId,id);
+        graphInfoLambdaQueryWrapper.eq(GraphInfo::getItemType, ItemType.ROOM);
+        graphInfoService.remove(graphInfoLambdaQueryWrapper);
+
+//检查 //删除属性列表
+        LambdaQueryWrapper<RoomAttrValue> roomAttrValueLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roomAttrValueLambdaQueryWrapper.eq(RoomAttrValue::getRoomId,id);
+        roomAttrValueService.remove(roomAttrValueLambdaQueryWrapper);
+        //删除配套信息
+        LambdaQueryWrapper<RoomFacility> facilityInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        facilityInfoLambdaQueryWrapper.eq(RoomFacility::getRoomId,id);
+        roomFacilityService.remove(facilityInfoLambdaQueryWrapper);
+
+
+        //删除标签信息
+        LambdaQueryWrapper<RoomLabel> roomLabelLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roomLabelLambdaQueryWrapper.eq(RoomLabel::getRoomId,id);
+        roomLabelService.remove(roomLabelLambdaQueryWrapper);
+
+        //删除支付方式列表
+        LambdaQueryWrapper<RoomPaymentType> roomPaymentTypeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roomPaymentTypeLambdaQueryWrapper.eq(RoomPaymentType::getRoomId,id);
+        roomPaymentTypeService.remove(roomPaymentTypeLambdaQueryWrapper);
+
+        //删除可选租期列表
+        LambdaQueryWrapper<RoomLeaseTerm> roomLeaseTermLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roomLeaseTermLambdaQueryWrapper.eq(RoomLeaseTerm::getRoomId,id);
+        roomLeaseTermService.remove(roomLeaseTermLambdaQueryWrapper);
+
     }
 }
 

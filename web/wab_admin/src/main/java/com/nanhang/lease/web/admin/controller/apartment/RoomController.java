@@ -1,6 +1,7 @@
 package com.nanhang.lease.web.admin.controller.apartment;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.common.result.Result;
 import com.nanhang.lease.model.entity.RoomInfo;
@@ -52,6 +53,13 @@ public class RoomController {
     @Operation(summary = "根据id删除房间信息")
     @DeleteMapping("removeById")
     public Result removeById(@RequestParam Long id) {
+
+        //删除房间
+        LambdaQueryWrapper<RoomInfo> roomInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roomInfoLambdaQueryWrapper.eq(RoomInfo::getId,id);
+        roomInfoService.remove(roomInfoLambdaQueryWrapper);
+        //删除房间对应的属性
+        roomInfoService.removeByIdDiy(id);
         return Result.ok();
     }
 

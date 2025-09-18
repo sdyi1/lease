@@ -339,8 +339,11 @@ public class ApartmentInfoServiceImpl extends ServiceImpl<ApartmentInfoMapper, A
         int roomNumber = roomInfoMapper.selectRoomNumberByApartmentId(id);
     //方法二
         //使用MyBatisPlus自带的方法计算出id对应公寓下的房间数量
+        //创建QueryWrapper对象
         LambdaQueryWrapper<RoomInfo> roomNumberQueryWrapper = new LambdaQueryWrapper<>();
+        //配置条件
         roomNumberQueryWrapper.eq(RoomInfo::getApartmentId,id);
+        //查询房间数量
        long roomNumber2 = roomInfoMapper.selectCount(roomNumberQueryWrapper);
         if(roomNumber2>0){
             //当触发这个异常时，全局异常处理器会调用我们写的getMessage方法获取message，将其printf
