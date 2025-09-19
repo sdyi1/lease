@@ -8,7 +8,7 @@
     <resultMap id="appointmentVo" type="com.nanhang.lease.web.admin.vo.appointment.AppointmentVo">
     
         <association property="apartmentInfo" javaType="com.nanhang.lease.model.entity.ApartmentInfo">
-
+            <id property="id" column="apartmentId"/>
             <result property="name" column="apartmentName"/>
             <result property="phone" column="apartmentPhone"/>
         </association>
@@ -18,6 +18,7 @@
     <select id="selectIpage" resultType="com.nanhang.lease.web.admin.vo.appointment.AppointmentVo">
 
         select
+            ai.id apartmentId,
             ai.name apartmentName,
             ai.introduction,
             ai.district_id,
@@ -31,20 +32,42 @@
             ai.longitude,
             ai.phone apartmentPhone,
             ai.is_release,
+            va.id,
             va.user_id,
             va.name,
             va.phone,
             va.apartment_id,
             va.appointment_time,
             va.additional_info,
-            va.appointment_status,
+            va.appointment_status
         from
                 view_appointment va
             left join
                     apartment_info ai
             on va.apartment_id = ai.id
-        where
+        <where>
             va.is_deleted=0
+        <if test="queryVo.provinceId!=null">
+             ai.province_id=#{queryVo.provinceId}
+        </if>
+        <if test="queryVo.cityId!=null">
+             ai.city_id=#{queryVo.cityId}
+        </if>
+
+        <if test="queryVo.districtId!=null">
+             ai.district_id=#{queryVo.districtId}
+        </if>
+        <if test="queryVo.apartmentId!=null">
+            va.apartment_id = #{queryVo.apartmentId}
+        </if>
+        <if test="queryVo.name!=null">
+            va.name=#{queryVo.name}
+        </if>
+        <if test="queryVo.phone!=null">
+            va.phone=#{queryVo.phone}
+        </if>
+        </where>
+
 
     </select>
 </mapper>
