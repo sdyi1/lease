@@ -1,8 +1,11 @@
 package com.nanhang.lease.web.admin.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.*;
+import com.nanhang.lease.model.enums.LeaseStatus;
 import com.nanhang.lease.web.admin.mapper.*;
 import com.nanhang.lease.web.admin.service.LeaseAgreementService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -69,6 +72,19 @@ public class LeaseAgreementServiceImpl extends ServiceImpl<LeaseAgreementMapper,
         agreementVo.setLeaseTerm(leaseTerm);
 
         return agreementVo;
+    }
+
+    //根据id修改租约状态
+    @Override
+    public void updateStatusById(Long id, LeaseStatus status) {
+        LambdaUpdateWrapper<LeaseAgreement> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(LeaseAgreement::getId,id);
+        updateWrapper.set(LeaseAgreement::getStatus,status);
+
+        leaseAgreementMapper.update(null,updateWrapper);
+
+
+
     }
 }
 

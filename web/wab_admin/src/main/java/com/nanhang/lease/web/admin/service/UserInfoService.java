@@ -1,5 +1,8 @@
 package com.nanhang.lease.web.admin.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -9,5 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-07-24 15:48:00
 */
 public interface UserInfoService extends IService<UserInfo> {
+
 
 }

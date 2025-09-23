@@ -57,6 +57,7 @@ public class    LeaseAgreementController {
     @Operation(summary = "根据id更新租约状态")
     @PostMapping("updateStatusById")
     public Result updateStatusById(@RequestParam Long id, @RequestParam LeaseStatus status) {
+        leaseAgreementService.updateStatusById(id, status);
         return Result.ok();
     }
 
