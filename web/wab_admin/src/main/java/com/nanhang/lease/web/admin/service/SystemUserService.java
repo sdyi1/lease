@@ -1,5 +1,6 @@
 package com.nanhang.lease.web.admin.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nanhang.lease.model.entity.SystemUser;
 import com.nanhang.lease.web.admin.vo.system.user.SystemUserItemVo;
 import com.nanhang.lease.web.admin.vo.system.user.SystemUserQueryVo;
@@ -13,4 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface SystemUserService extends IService<SystemUser> {
 
+    IPage<SystemUserItemVo> selectByPage(Page<SystemUserItemVo> page, SystemUserQueryVo queryVo);
+
+    SystemUserItemVo getByIdDiy(Long id);
 }
