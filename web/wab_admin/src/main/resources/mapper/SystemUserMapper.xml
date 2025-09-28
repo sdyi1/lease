@@ -51,4 +51,22 @@
             su.id = #{id}
 
     </select>
+    <select id="selectOneByUserName" resultType="com.nanhang.lease.model.entity.SystemUser">
+
+    select
+        su.id,
+        su.username,
+        su.password,
+        su.name,
+        su.type,
+        su.phone,
+        su.avatar_url avatarUrl,
+        su.additional_info additionalInfo,
+        su.post_id postId,
+        su.status
+        from
+                system_user su
+    where
+        su.username = #{username}
+    </select>
 </mapper>
