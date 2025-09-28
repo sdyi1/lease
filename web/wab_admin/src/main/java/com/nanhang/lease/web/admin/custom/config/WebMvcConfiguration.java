@@ -2,9 +2,11 @@ package com.nanhang.lease.web.admin.custom.config;
 
 
 import com.nanhang.lease.web.admin.custom.converter.StringToBaseEnumConverterFactory;
+import com.nanhang.lease.web.admin.custom.interceptor.AuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 //这个类是用来配置mvc的，其实Spring会自动配置，我们在StringToItemTypeConverter这个类上方添加了注解@Component不需要写这个配置类
@@ -28,10 +30,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Autowired
     private StringToBaseEnumConverterFactory stringToBaseEnumConverterFactory;
 
+    //将拦截器注入IOC容器中，后面需要直接注入
+    @Autowired
+    private AuthenticationInterceptor authenticationInterceptor;
+
     @Override
     public void addFormatters(FormatterRegistry registry) {
         //使用addConverterFactory方法添加转换器工厂
         registry.addConverterFactory(this.stringToBaseEnumConverterFactory);
+    }
+
+    //添加拦截器
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authenticationInterceptor);
     }
 }
 
